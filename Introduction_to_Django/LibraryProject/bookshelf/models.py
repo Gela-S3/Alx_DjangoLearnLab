@@ -7,4 +7,4 @@ class Book(models.Model):
     publication_year = models.IntegerField()
 
     def __str__(self):
-        return (f"Title: {self.title}, Author: {self.author}, Publication Year: {self.publication_year}")
+        return f"Title: {self.title}, Author: {self.author}, Publication Year: {self.publication_year}"
