@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.generic.detail import DetailView
 from .models import Library, Book
 
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
