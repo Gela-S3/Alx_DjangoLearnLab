@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import DetailView
-from .models import Book, Library
+from .models import Library, Book
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
