@@ -8,7 +8,7 @@ from django.contrib import messages
 
 # Function-based view: List all books
 def list_books(request):
-    books = Book.objects.select_related("author").all()
+    books = Book.objects.all()
     return render(request, "relationship_app/list_books.html", {"books": books})
 
 
@@ -26,7 +26,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your account has been created. You can now log in.")
-            return redirect("list_books")
+            return redirect("list")
     else:
         form = UserCreationForm()
     return render(request, "relationship_app/register.html", {"form": form})
