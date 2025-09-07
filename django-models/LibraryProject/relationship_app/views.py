@@ -9,7 +9,7 @@ from django.contrib import messages
 # Function-based view: List all books
 def list_books(request):
     books = Book.objects.all()
-    return render(request, "relationship_app/list_books.html", {"books": books})
+    return render(request, "relationship_app/library_detail.html", {"books": books})
 
 
 # Class-based view: Show library details
