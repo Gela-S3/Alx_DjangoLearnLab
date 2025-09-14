@@ -1,106 +1,52 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.views.generic.detail import DetailView
-from .models import Library, Book, Author
-
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
-
-from django.contrib.auth.decorators import user_passes_test
+from models import CustomUser, Book
+from .forms import ExampleForm
 from django.contrib.auth.decorators import permission_required
 
-# Function-based view: List all books
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, "relationship_app/list_books.html", {"books": books})
 
+# Create your views here.
 
-# Class-based view: Show library details
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = "relationship_app/library_detail.html"
-    context_object_name = "library"
+@permission_required('bookshelf.can_view', raise_exception=True)
+def view_user(request):
+    pass
 
+@permission_required('bookshelf.can_create', raise_exception=True)
+def create_user(request):
+    if request.method == 'POST':
+        # Create a form instance from the POST data
+        form = ExampleForm(request.POST)
 
-
-def register(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        # Check if the form is valid
         if form.is_valid():
-            form.save()
-            messages.success(request, "Your account has been created. You can now log in.")
-            return redirect("list")
+            # Save the new user object
+            user = form.save()
+            
+            # Redirect to a success URL after saving
+            return redirect('some_success_url')
     else:
-        form = UserCreationForm()
-    return render(request, "relationship_app/register.html", {"form": form})
+        # If it's a GET request, create an empty form
+        form = ExampleForm()
+
+    # Render the template with the form
+    return render(request, 'bookshelf/form_example.html', {'form': form})
 
 
 
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def edit_user(request):
+    pass
+
+@permission_required('bookshelf.can_delete', raise_exception=True)
+def delete_user(request):
+    pass
 
 
+@permission_required('bookshelf.can_view', raise_exception=True)
+def book_list(request):
 
-# Role checkers
-def is_admin(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
+    book_list = Book.objects.all()
 
-def is_librarian(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
+    context = {'book_list':  book_list }
 
-def is_member(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
-
-
-# Views
-@user_passes_test(is_admin)
-def admin_view(request):
-    return render(request, "relationship_app/admin_view.html")
-
-
-@user_passes_test(is_librarian)
-def librarian_view(request):
-    return render(request, "relationship_app/librarian_view.html")
-
-
-@user_passes_test(is_member)
-def member_view(request):
-    return render(request, "relationship_app/member_view.html")
-
-#Add Book
-
-@permission_required("relationship_app.can_add_book", raise_exception=True)
-def add_book(request):
-    if request.method == "POST":
-        form = BookForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("list_books")  # redirect to book list
-    else:
-        form = BookForm()
-    return render(request, "relationship_app/add_book.html", {"form": form})
-
-# Edit Book
-@permission_required("relationship_app.can_change_book", raise_exception=True)
-def edit_book(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    if request.method == "POST":
-        form = BookForm(request.POST, instance=book)
-        if form.is_valid():
-            form.save()
-            return redirect("list_books")
-    else:
-        form = BookForm(instance=book)
-    return render(request, "relationship_app/edit_book.html", {"form": form, "book": book})
-
-
-
-# Delete Book
-
-
-@permission_required("relationship_app.can_delete_book", raise_exception=True)
-def delete_book(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    if request.method == "POST":
-        book.delete()
-        return redirect("list_books")
-    return render(request, "relationship_app/delete_book.html", {"book": book})
+    return render(request, 'bookshelf/templates/list_books.html', context)
+    
